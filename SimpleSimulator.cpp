@@ -237,7 +237,7 @@ void SimpleSimulator::mousePressed(float x, float y, long long int activeId) {
 void SimpleSimulator::mouseDragged(float x, float y, long long int activeId) {
 	//printf("dragged %f %f\n",x,y);
 
-	auto cursorIterator = activeCursorMap.find( activeId );
+	std::map<long long int, TuioCursor*>::iterator cursorIterator = activeCursorMap.find( activeId );
 	if( cursorIterator != activeCursorMap.end() ){
 		TuioCursor *cursor = cursorIterator->second;
 
@@ -247,7 +247,8 @@ void SimpleSimulator::mouseDragged(float x, float y, long long int activeId) {
 		if( joint ) {
 			float dx = x-cursor->getX();
 			float dy = y-cursor->getY();
-			for (TuioCursor* jointCursor : jointCursorList) {
+			for (std::list<TuioCursor*>::iterator it = jointCursorList.begin(); it != jointCursorList.end(); ++it) {
+				TuioCursor* jointCursor = *it;
 				tuioServer->updateTuioCursor(jointCursor,jointCursor->getX()+dx,jointCursor->getY()+dy);
 			}
 		} else tuioServer->updateTuioCursor(cursor,x,y);
@@ -257,7 +258,7 @@ void SimpleSimulator::mouseDragged(float x, float y, long long int activeId) {
 void SimpleSimulator::mouseReleased(float x, float y, long long int activeId) {
 	//printf("released %f %f\n",x,y);
 
-	auto cursorIterator = activeCursorMap.find( activeId );
+	std::map<long long int, TuioCursor*>::iterator cursorIterator = activeCursorMap.find( activeId );
 	if( cursorIterator != activeCursorMap.end() ){
 		activeCursorMap.erase(cursorIterator);
 		bool sticky = ( std::find(stickyCursorList.begin(), stickyCursorList.end(), cursorIterator->second) != stickyCursorList.end());
